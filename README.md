@@ -2,7 +2,7 @@
 Download manga from japscan.to. / 
 Télécharger des mangas depuis japscan.to
 
-## I a rewrititing this program
+## DEAD PROJECT. DOESN'T WORK ANYMORE
 
 ## Dependencies / Nécessaire : 
 Python 3.X (tested with python 3.7).
