@@ -5,6 +5,7 @@ try:
 	import bs4 as bs
 	import cloudscraper
 	from PIL import Image
+	import requests
 except Exception as e:
 	print("ERROR IMPORT")
 	print(e)
@@ -64,7 +65,6 @@ def main():
 
 
 
-
 class Japscan():
 	def __init__(self):
 		self.session = cloudscraper.create_scraper()
@@ -73,8 +73,9 @@ class Japscan():
 	def telecharger(self, manga, chapitre, chap_vol="auto"): # chap_vol = chap / vol / auto
 
 
-		self.url_base_chapitre = f"https://www.japscan.to/lecture-en-ligne/{manga}/{chapitre}/1.html"
-		self.url_base_volume = f"https://www.japscan.to/lecture-en-ligne/{manga}/volume-{chapitre}/1.html"
+		# self.url_base_chapitre = f"https://www.japscan.to/lecture-en-ligne/{manga}/{chapitre}/1.html"
+		self.url_base_chapitre = f"https://www.scan-vf.net/{manga}/chapitre-{chapitre}/"
+		# self.url_base_volume = f"https://www.japscan.to/lecture-en-ligne/{manga}/volume-{chapitre}/1.html"
 
 		if chap_vol == "chap":
 			liste_url = [self.url_base_chapitre]
@@ -90,6 +91,7 @@ class Japscan():
 			print("Code source récupéré")
 
 			soup = bs.BeautifulSoup(code_source.content, "html.parser")
+			# print(soup)
 
 			h2_all = soup.findAll('h2')
 			for h2 in h2_all:
@@ -101,38 +103,52 @@ class Japscan():
 
 			#
 			# Récupérer le format de https://c.japscan.to/lel/One-Piece/936/04.jpg
-			base_url_img = "https://c.japscan.to/lel/"
-			img_1 = soup.find('div',attrs={"id":u"image"})
-			img_1_url = img_1["data-src"]
-			manga = "".join(img_1_url.split("/")[-3])
-			modele_url_img = base_url_img + manga
-			#
+			# base_url_img = "https://c.japscan.se/" #https://www.scan-vf.net/uploads/manga/one_piece/chapters/chapitre-1001/03.png
+			# img_1 = soup.find('div',attrs={"id":u"image"})
+			# # print (img_1)
+			# img_1_url = img_1["data-src"]
+			# manga = "".join(img_1_url.split("/")[-3])
+			# print(manga)
+			# modele_url_img = base_url_img + manga
+			# #
 
-			pages_vrac = soup.find('select',attrs={"id":u"pages"})
-			pages_brut = pages_vrac.findAll('option')
+			pages_vrac = soup.find('div',attrs={"id":u"all"})
+			pages_brut = pages_vrac.findAll('img')
+			
 			for page in pages_brut:
-				page_data_img = page["data-img"]
-				page_titre = page.text.split(" ")[1]
-				page_url = page["value"]
+				
+				page_data_img = page["data-src"]
+				# print(page_data_img)
+				page_titre = page_data_img.split("/")[-1].split(".")[0]
+				# print(page_titre)
 
-				chapitre = page_url.split("/")[-2]
-				if chapitre[:5] == "volum":
-					chapitre = "V" + chapitre[1:]
-				url_image = modele_url_img + "/" + chapitre + "/" + page_data_img
+				# page_url = page["value"]
 
-				images[page_titre] = url_image
+				# chapitre = page_url.split("/")[-2]
+				# if chapitre[:5] == "volum":
+				# 	chapitre = "V" + chapitre[1:]
+				# url_image = modele_url_img + "/" + chapitre + "/" + page_data_img
+
+				images[page_titre] = page_data_img
 
 			#images = {'01': 'https://c.japscan.to/lel/One-Piece/936/01.jpg', '02': 'https://c.japscan.to/lel/One-Piece/936/04.jpg', '03': 'https://c.japscan.to/lel/One-Piece/936/05.jpg', '04': 'https://c.japscan.to/lel/One-Piece/936/06.jpg', '05': 'https://c.japscan.to/lel/One-Piece/936/07.jpg', '06': 'https://c.japscan.to/lel/One-Piece/936/08.jpg', '07': 'https://c.japscan.to/lel/One-Piece/936/09.jpg', '08': 'https://c.japscan.to/lel/One-Piece/936/10.jpg', '09': 'https://c.japscan.to/lel/One-Piece/936/11.jpg', '10': 'https://c.japscan.to/lel/One-Piece/936/12.jpg', '11': 'https://c.japscan.to/lel/One-Piece/936/13.jpg', '12': 'https://c.japscan.to/lel/One-Piece/936/14.jpg', '13': 'https://c.japscan.to/lel/One-Piece/936/15.jpg', '14': 'https://c.japscan.to/lel/One-Piece/936/16.jpg', '15': 'https://c.japscan.to/lel/One-Piece/936/17.jpg', '16': 'https://c.japscan.to/lel/One-Piece/936/18.jpg', '17': 'https://c.japscan.to/lel/One-Piece/936/19.jpg'}
 
 			for nom_img, url_img in images.items():
-				# print(nom_img, url_img)
-
+				print(url_img.strip())
 				os.makedirs(f"final/{manga}/{chapitre}", exist_ok=True)
 
-				requete_img = self.session.get(url_img, stream=True)
-				img = Image.open(requete_img.raw)
+				url="https://www.scan-vf.net/uploads/manga/one_piece/chapters/chapitre-1001/" + str(nom_img) + ".png"
+				print(url)
+
+				img = Image.open(requests.get(url_img.strip(), stream=True).raw)
+
 				nom = f"final/{manga}/{chapitre}/{nom_img}.png"
+
 				img.save(nom)
+
+
+
+
 
 				print(f"{nom}")
 

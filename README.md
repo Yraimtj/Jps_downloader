@@ -1,6 +1,3 @@
-# japscan-downloader
-Download manga from japscan.to. / 
-Télécharger des mangas depuis japscan.to
 
 ## DEAD PROJECT. DOESN'T WORK ANYMORE
 
