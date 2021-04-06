@@ -75,7 +75,7 @@ class Japscan():
 
 		# self.url_base_chapitre = f"https://www.japscan.to/lecture-en-ligne/{manga}/{chapitre}/1.html"
 		self.url_base_chapitre = f"https://www.scan-vf.net/{manga}/chapitre-{chapitre}/"
-		# self.url_base_volume = f"https://www.japscan.to/lecture-en-ligne/{manga}/volume-{chapitre}/1.html"
+		self.url_base_volume = f"https://www.japscan.to/lecture-en-ligne/{manga}/volume-{chapitre}/1.html"
 
 		if chap_vol == "chap":
 			liste_url = [self.url_base_chapitre]
